@@ -20,7 +20,7 @@ class PastureInstance (
     private var egg: Egg? = null,
     private val player: UUID
 ) {
-    private val maxTime: Int = MythicalDaycare.BREEDING_TIME
+    private val maxTime: Int = MythicalDaycare.CONFIG.breedingTime()
 
     companion object {
         fun createInstance(leftPokemon: Pokemon?, rightPokemon: Pokemon?, player: UUID): PastureInstance {

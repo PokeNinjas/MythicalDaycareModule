@@ -47,8 +47,8 @@ repositories {
 
 
 dependencies {
-    implementation(project(mapOf("path" to ":MythicalContentModule")))
     minecraft("com.mojang:minecraft:${Versions.MINECRAFT}")
+//    implementation(project(mapOf("path" to ":MythicalContentModule")))
     mappings(loom.layered {
         mappings(Dependencies.QUILT_MAPPINGS)
         officialMojangMappings()
