@@ -2,7 +2,7 @@ package com.mythicalnetwork.mythicaldaycare.daycare
 
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.google.gson.*
-import com.mythicalnetwork.mythicalcontent.content.MythicalItems
+import com.mythicalnetwork.mythicalmod.registry.MythicalItems
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.TagParser
 import net.minecraft.world.item.ItemStack

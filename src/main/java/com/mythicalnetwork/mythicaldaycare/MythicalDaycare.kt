@@ -8,6 +8,7 @@ import dev.lightdream.databasemanager.DatabaseMain
 import dev.lightdream.databasemanager.config.SQLConfig
 import dev.lightdream.databasemanager.database.HibernateDatabaseManager
 import dev.lightdream.filemanager.FileManager
+import dev.lightdream.filemanager.FileManagerMain
 import dev.lightdream.logger.LoggableMain
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.server.MinecraftServer
@@ -27,7 +28,7 @@ import java.io.File
  * With Kotlin, the Entrypoint can be defined in numerous ways. This is showcased on Fabrics' Github:
  * https://github.com/FabricMC/fabric-language-kotlin#entrypoint-samples
  */
-object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain {
+object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain, FileManagerMain {
 
     const val MODID = "mythicaldaycare"
     val LOGGER: Logger = LogUtils.getLogger()
@@ -43,7 +44,13 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain {
     val CONFIG: MythicalDaycareConfig = MythicalDaycareConfig.createAndLoad()
 
     override fun onInitialize(mod: ModContainer?) {
-        println("Hello from Quilt!")
+        println("Hello from MythicalDaycare!")
+        instance = this
+        dev.lightdream.logger.Logger.init(this)
+        reflections = Reflections("com.mythicalnetwork.mythicaldaycare")
+        fileManager = FileManager(this)
+        sqlConfig = fileManager!!.load(SQLConfig::class.java)
+        databaseManagerObj = DatabaseManager()
         ServerLifecycleEvents.READY.register {
             CURRENT_SERVER = it
         }
@@ -67,6 +74,10 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain {
 
     override fun getDataFolder(): File {
         return File("${System.getProperty(" user . dir ")}/config/${MODID}")
+    }
+
+    override fun getPath(): String {
+        return "${System.getProperty(" user . dir ")}/config/${MODID}"
     }
 
     override fun getSqlConfig(): SQLConfig {

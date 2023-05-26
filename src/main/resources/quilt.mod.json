@@ -20,7 +20,12 @@
     },
     "intermediate_mappings": "net.fabricmc:intermediary",
     "entrypoints": {
-      "init": "com.mythicalnetwork.mythicaldaycare.MythicalDaycare"
+      "init": [
+        {
+          "adapter": "kotlin",
+          "value": "com.mythicalnetwork.mythicaldaycare.MythicalDaycare"
+        }
+      ]
     },
     "depends": [
       {

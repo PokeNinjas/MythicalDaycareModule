@@ -3,7 +3,6 @@ package com.mythicalnetwork.mythicaldaycare.database;
 import com.mythicalnetwork.mythicaldaycare.MythicalDaycare;
 import com.mythicalnetwork.mythicaldaycare.daycare.Egg;
 import com.mythicalnetwork.mythicaldaycare.daycare.PastureInstance;
-import dev.lightdream.databasemanager.DatabaseMain;
 import dev.lightdream.databasemanager.dto.DatabaseEntry;
 import jakarta.persistence.*;
 import net.minecraft.server.level.ServerPlayer;
@@ -94,7 +93,7 @@ public class DaycareUser extends DatabaseEntry {
     }
 
     @Override
-    public int getID() {
+    public Object getID() {
         return id;
     }
 

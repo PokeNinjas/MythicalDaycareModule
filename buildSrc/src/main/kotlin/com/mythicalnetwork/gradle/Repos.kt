@@ -12,6 +12,7 @@ object Repos {
         "https://maven.wispforest.io",
         "https://oss.sonatype.org/content/repositories/snapshots",
         "https://maven.terraformersmc.com/releases/",
-        "https://maven.nucleoid.xyz/"
+        "https://maven.nucleoid.xyz/",
+        "https://repo.lightdream.dev/"
     )
 }
