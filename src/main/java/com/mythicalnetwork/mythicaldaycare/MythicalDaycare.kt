@@ -39,7 +39,6 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain, FileManager
     private var sqlConfig: SQLConfig? = null
     var databaseManagerObj: DatabaseManager? = null
 
-    private var reflections: Reflections? = null
     private var CURRENT_SERVER: MinecraftServer? = null
     val CONFIG: MythicalDaycareConfig = MythicalDaycareConfig.createAndLoad()
 
@@ -47,7 +46,6 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain, FileManager
         println("Hello from MythicalDaycare!")
         instance = this
         dev.lightdream.logger.Logger.init(this)
-        reflections = Reflections("com.mythicalnetwork.mythicaldaycare")
         fileManager = FileManager(this)
         sqlConfig = fileManager!!.load(SQLConfig::class.java)
         databaseManagerObj = DatabaseManager()

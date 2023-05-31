@@ -2,6 +2,7 @@ import com.mythicalnetwork.gradle.Dependencies
 import com.mythicalnetwork.gradle.Versions
 import com.mythicalnetwork.gradle.ProjectInfo
 import com.mythicalnetwork.gradle.Repos
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("java")
@@ -9,6 +10,7 @@ plugins {
     id("org.quiltmc.loom") version("1.2.+")
     kotlin("jvm") version ("1.8.0")
     kotlin("kapt") version("1.8.20")
+    id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
 group = ProjectInfo.GROUP
@@ -16,6 +18,10 @@ version = ProjectInfo.VERSION
 base {
     archivesName.set("MythicalDaycareModule")
 }
+
+val shade: Configuration by configurations.creating
+listOf(configurations.implementation)
+    .forEach { it { extendsFrom(shade) } }
 
 loom {
     mixin {
@@ -69,15 +75,15 @@ dependencies {
     }
     kapt("org.ow2.asm:asm:9.3")
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    include("dev.lightdream:database-manager:5.0.9")?.let { implementation(it) }
-    include("dev.lightdream:file-manager:2.7.2")?.let { implementation(it) }
-    include("dev.lightdream:lambda:4.1.14")?.let { implementation(it) }
-    include("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
+    shade("dev.lightdream:database-manager:5.0.9")?.let { implementation(it) }
+    shade("dev.lightdream:file-manager:2.7.2")?.let { implementation(it) }
+    shade("dev.lightdream:lambda:4.1.14")?.let { implementation(it) }
+    shade("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
 
-    include("org.reflections:reflections:0.10.2")?.let { implementation(it) }
+    shade("org.reflections:reflections:0.10.2")?.let { implementation(it) }
 
-    include("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
-    include("org.hibernate.orm:hibernate-core:6.2.0.Final")
+    shade("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
+    shade("org.hibernate.orm:hibernate-core:6.2.0.Final")
 
     testImplementation(Dependencies.JUNIT_JUPITER_API)
     testRuntimeOnly(Dependencies.JUNIT_JUPITER_ENGINE)
@@ -85,4 +91,19 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+val shadowJar by tasks.getting(ShadowJar::class) {
+    configurations = listOf(shade)
+}
+
+val remapShadowJar = tasks.register<net.fabricmc.loom.task.RemapJarTask>("remapShadowJar") {
+    dependsOn(shadowJar)
+    archiveClassifier.set("")
+    input.set(shadowJar.archiveFile)
+    addNestedDependencies.set(true)
+}
+
+tasks.build.configure {
+    dependsOn(remapShadowJar)
 }
