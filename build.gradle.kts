@@ -67,6 +67,7 @@ dependencies {
     }
 
     for (dep in Dependencies.INCLUDE_DEPS) {
+        modImplementation(dep)
         shade(dep)
     }
 
