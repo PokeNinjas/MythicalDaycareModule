@@ -24,7 +24,10 @@ object Dependencies {
         QUILTED_FABRIC_API,
         ARCHITECTURY,
         COBBLEMON,
-        OWOLIB,
+        OWOLIB
+    )
+
+    val INCLUDE_DEPS = listOf<String>(
         OWOSENTINEL,
         LUCKPERMS,
         FABRIC_PERMS_API,

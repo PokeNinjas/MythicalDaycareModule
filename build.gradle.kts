@@ -52,27 +52,24 @@ repositories {
 
 
 dependencies {
-    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")?.let { include(it) }
     minecraft("com.mojang:minecraft:${Versions.MINECRAFT}")
     mappings(loom.layered {
         mappings(Dependencies.QUILT_MAPPINGS)
         officialMojangMappings()
     })
+
     for(dep in Dependencies.CORE_DEPS){
-        if(dep.equals("owo-lib")){
-            modImplementation(dep)
-        } else {
-            include(dep)?.let {
-                if(!dep.contains("owo-sentinel")){
-                    modImplementation(it)
-                }
-            }
-        }
+        modImplementation(dep)
         if(dep.contains("owo-lib")){
             annotationProcessor(dep)
             kapt(dep)
         }
     }
+
+    for (dep in Dependencies.INCLUDE_DEPS) {
+        shade(dep)
+    }
+
     kapt("org.ow2.asm:asm:9.3")
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     shade("dev.lightdream:database-manager:5.0.9")?.let { implementation(it) }
@@ -84,6 +81,7 @@ dependencies {
 
     shade("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
     shade("org.hibernate.orm:hibernate-core:6.2.0.Final")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")?.let { include(it) }
 
     testImplementation(Dependencies.JUNIT_JUPITER_API)
     testRuntimeOnly(Dependencies.JUNIT_JUPITER_ENGINE)
