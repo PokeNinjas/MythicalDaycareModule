@@ -71,11 +71,11 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain, FileManager
     }
 
     override fun getDataFolder(): File {
-        return File("${System.getProperty(" user . dir ")}/config/${MODID}")
+        return File("${System.getProperty("user.dir")}/config/${MODID}")
     }
 
     override fun getPath(): String {
-        return "${System.getProperty(" user . dir ")}/config/${MODID}"
+        return "${System.getProperty("user.dir")}/config/${MODID}"
     }
 
     override fun getSqlConfig(): SQLConfig {
