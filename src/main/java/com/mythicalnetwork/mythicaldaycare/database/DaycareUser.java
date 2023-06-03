@@ -67,7 +67,8 @@ public class DaycareUser extends DatabaseEntry {
     }
 
     public PastureInstance getPasture() {
-        return DatabaseManager.Companion.getGSON().fromJson(pasture, PastureInstance.class);
+        PastureInstance instance = DatabaseManager.Companion.getGSON().fromJson(pasture, PastureInstance.class);
+        return instance;
     }
 
     public List<Egg> getEggs() {

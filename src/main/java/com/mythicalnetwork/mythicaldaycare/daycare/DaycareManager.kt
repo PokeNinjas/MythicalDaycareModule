@@ -127,7 +127,7 @@ class DaycareManager {
         }
     }
 
-    fun getPasture(player: ServerPlayer): PastureInstance {
+    fun getPasture(player: ServerPlayer): PastureInstance? {
         val breedingUser = MythicalDaycare.databaseManager.getUserOrCreate(player)
         return breedingUser.getPasture()
     }

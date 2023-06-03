@@ -17,6 +17,7 @@ import com.mythicalnetwork.mythicaldaycare.utils.Utils
 import com.mythicalnetwork.mythicaldaycare.utils.Utils.nullOrAddList
 import com.mythicalnetwork.mythicaldaycare.utils.Utils.nullOrAddSingle
 import com.mythicalnetwork.mythicaldaycare.utils.Utils.nullOrRun
+import com.mythicalnetwork.mythicalmod.registry.MythicalItems
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -44,6 +45,7 @@ class DaycareGui(val player: ServerPlayer) :
     private fun refresh() {
         val user = MythicalDaycare.databaseManager.getUserOrCreate(player)
         pasture = DaycareManager.INSTANCE.getPasture(player)
+
 
         val firstPokemon: Pokemon? = pasture?.getLeftPokemon()
         val secondPokemon: Pokemon? = pasture?.getRightPokemon()
@@ -113,10 +115,10 @@ class DaycareGui(val player: ServerPlayer) :
         if (pasture?.getEgg() != null) {
             val button = GooeyButton.builder()
 
-            button.display(ItemStack(Items.PAPER).apply { orCreateTag.putInt("CustomModelData", 100023) })
+            button.display(MythicalItems.POKEMON_EGG.defaultInstance)
                 .title(Utils.colorOf("&aPokemon Egg"))
                 .onClick { cons ->
-                    if (DaycareManager.INSTANCE.getPasture(player).getEgg() != null) {
+                    if (DaycareManager.INSTANCE.getPasture(player)?.getEgg() != null) {
                         if (DaycareManager.INSTANCE.getEggCountForPlayer(player.uuid) >= MythicalDaycare.CONFIG.maxEggsPerPlayer()) {
                             cons.template.getSlot(cons.slot).setButton(
                                 GooeyButton.builder().display(ItemStack(Items.BARRIER))
@@ -145,7 +147,7 @@ class DaycareGui(val player: ServerPlayer) :
         }
 
         template!!.set(0, 7, GooeyButton.builder()
-            .display(ItemStack(Items.PAPER).apply { orCreateTag.putInt("CustomModelData", 100024) })
+            .display(ItemStack(Items.PAPER).apply { orCreateTag.putInt("CustomModelData", 1000) })
             .title(Utils.colorOf("&aBackpack"))
             .onClick { cons ->
                 UIManager.openUIForcefully(player, EggsGui(player))
@@ -163,16 +165,17 @@ class DaycareGui(val player: ServerPlayer) :
     // Method that will set the template percentage item with a specific CustomModelData number depending on the percentage. 100025 is 0% and 100035 is 100%
     fun setPercentageBar(savedInstance: PastureInstance?) {
         val tickInstance: PastureInstance? = DaycareManager.INSTANCE.PASTUREMAP[player.uuid]
-        val itemStack = ItemStack(Items.PAPER)
-        var percentage = 0
+        val itemStack = MythicalItems.PROGRESS_BAR.defaultInstance
+        var percentage = 0.0
 
         if (savedInstance != null && savedInstance.isComplete()) {
-            percentage = 10
+            percentage = 10.0
         } else if (tickInstance != null && tickInstance.getTicks() > 0) {
-            percentage = ((tickInstance.getTicks() * 100) / tickInstance.getMaxTicks()) / 10
+            percentage = ((tickInstance.getTicks() * 100) / tickInstance.getMaxTicks()) / 100.0
         }
+
         template!!.set(2, 8, GooeyButton.builder()
-            .display(itemStack.apply { orCreateTag.putInt("CustomModelData", 100025 + percentage) })
+            .display(itemStack.apply { orCreateTag.putDouble("progress", percentage) })
             .title(Utils.colorOf(""))
             .build())
     }

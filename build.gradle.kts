@@ -78,8 +78,6 @@ dependencies {
     shade("dev.lightdream:lambda:4.1.14")?.let { implementation(it) }
     shade("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
 
-    shade("org.reflections:reflections:0.10.2")?.let { implementation(it) }
-
     shade("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
     shade("org.hibernate.orm:hibernate-core:6.2.0.Final")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")?.let { include(it) }
@@ -94,6 +92,15 @@ tasks.getByName<Test>("test") {
 
 val shadowJar by tasks.getting(ShadowJar::class) {
     configurations = listOf(shade)
+    dependencies {
+        exclude(dependency("org.slf4j:.*:.*"))
+    }
+    relocate("com.mysql", "com.mythicalnetwork.mythicaldaycare.libs")
+    relocate("org.mariadb", "com.mythicalnetwork.mythicaldaycare.libs")
+    relocate("org.apache", "com.mythicalnetwork.mythicaldaycare.libs")
+    relocate("org.sqlite", "com.mythicalnetwork.mythicaldaycare.libs")
+    relocate("org.h2", "com.mythicalnetwork.mythicaldaycare.libs")
+    relocate("com.google", "com.mythicalnetwork.mythicaldaycare.libs")
 }
 
 val remapShadowJar = tasks.register<net.fabricmc.loom.task.RemapJarTask>("remapShadowJar") {

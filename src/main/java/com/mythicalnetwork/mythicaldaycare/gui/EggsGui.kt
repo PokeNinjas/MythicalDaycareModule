@@ -72,7 +72,7 @@ class EggsGui(var player: ServerPlayer) :
         template!!.rectangleFromList(1, 2, 2, 5, buttons as List<GooeyButton>)
         template!!.set(0, 0,
             GooeyButton.builder()
-                .display(ItemStack(Items.PAPER).apply { orCreateTag.putInt("CustomModelData", 20001) })
+                .display(ItemStack(Items.ARROW))
                 .title(Utils.colorOf("&cBack"))
                 .onClick { cons ->
                     UIManager.openUIForcefully(player, DaycareGui(player))

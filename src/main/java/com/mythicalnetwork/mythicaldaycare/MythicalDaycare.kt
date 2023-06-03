@@ -19,7 +19,6 @@ import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents
 import org.quiltmc.qsl.networking.api.ServerLoginConnectionEvents
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
-import org.reflections.Reflections
 import org.slf4j.Logger
 import java.io.File
 
