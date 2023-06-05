@@ -219,6 +219,12 @@ class DaycareManager {
                     val instance = user.getPasture()
                     if (!instance.isComplete() && instance.getLeftPokemon() != null && instance.getRightPokemon() != null
                         && PastureInstance.checkCompatible(instance.getLeftPokemon(), instance.getRightPokemon())) {
+                        if (instance.getReadyTime().isNullOrEmpty()) {
+                            instance.setReadyTime(
+                                ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong())
+                                    .format(Utils.dateFormatter)
+                            )
+                        }
                         INSTANCE.PASTUREMAP[user.uuid] = instance
                     }
                 }
@@ -227,10 +233,7 @@ class DaycareManager {
 
     fun onPlayerQuit(player: ServerPlayer) {
         // Save player's Egg Data and remove them from the Hatching Map so they aren't ticked.
-        MythicalDaycare.databaseManager.getUserOrCreate(player)
-            .let { user ->
-                user.setEggData(HATCHMAP[player.uuid])
-            }
+        MythicalDaycare.databaseManager.getUserOrCreate(player).setEggData(HATCHMAP[player.uuid])
 
         INSTANCE.HATCHMAP.remove(player.uuid)
         INSTANCE.PASTUREMAP.remove(player.uuid)
