@@ -62,8 +62,8 @@ class DaycareManager {
             player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
             var message: TextNode? = TextParserUtils.formatNodes(MythicalDaycare.CONFIG.eggLaidMessage())
             val placeholderMap: HashMap<String, Component> = HashMap()
-            placeholderMap["left_pokemon"] = Component.literal(instance.getLeftPokemon()!!.species.name)
-            placeholderMap["right_pokemon"] = Component.literal(instance.getRightPokemon()!!.species.name)
+            placeholderMap["left_pokemon"] = instance.getLeftPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
+            placeholderMap["right_pokemon"] = instance.getRightPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
             message = Placeholders.parseNodes(message, Placeholders.ALT_PLACEHOLDER_PATTERN_CUSTOM, placeholderMap)
             player.sendSystemMessage(
                 (message.toText(PlaceholderContext.of(player).asParserContext(), true) as MutableComponent)

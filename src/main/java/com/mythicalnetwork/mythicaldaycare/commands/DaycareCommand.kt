@@ -13,7 +13,7 @@ object DaycareCommand {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack?>) {
         dispatcher.register(
             Commands.literal("daycare")
-                .requires { Permissions.check(it, "mythicaldaycare.daycare") }
+                .requires { Permissions.check(it, "mythicaldaycare.command.daycare") }
                 .executes { ctx ->
                     val player: ServerPlayer = ctx.source.player!!
                     MythicalDaycare.databaseManager.getUserOrCreate(player)
