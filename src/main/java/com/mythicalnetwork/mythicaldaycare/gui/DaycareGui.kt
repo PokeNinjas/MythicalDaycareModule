@@ -98,7 +98,7 @@ class DaycareGui(val player: ServerPlayer) :
         )
 
         if (pasture?.getLeftPokemon() != null && pasture?.getRightPokemon() != null) {
-            if (pasture?.checkCompatible() == false) {
+            if (!PastureInstance.checkCompatible(pasture?.getLeftPokemon(), pasture?.getRightPokemon())) {
                 template!!.set(
                     1, 2, GooeyButton.builder()
                         .display(ItemStack(Items.BARRIER))
@@ -158,7 +158,7 @@ class DaycareGui(val player: ServerPlayer) :
         percentageBarTask = Task.builder()
             .execute { task -> setPercentageBar(pasture) }
             .infinite()
-            .interval(MythicalDaycare.CONFIG.progressUpdateTime().toLong())
+            .interval(MythicalDaycare.CONFIG.progressUpdateTime().toLong() * 20)
             .build()
     }
 
@@ -170,14 +170,16 @@ class DaycareGui(val player: ServerPlayer) :
 
         if (savedInstance != null && savedInstance.isComplete()) {
             percentage = 10.0
-        } else if (tickInstance != null && tickInstance.getTicks() > 0) {
-            percentage = ((tickInstance.getTicks() * 100) / tickInstance.getMaxTicks()) / 100.0
+        } else if (tickInstance != null && tickInstance.getRemainingSeconds() > 0) {
+            percentage = (MythicalDaycare.CONFIG.breedingTime().toDouble() - tickInstance.getRemainingSeconds()) / MythicalDaycare.CONFIG.breedingTime()
         }
 
-        template!!.set(2, 8, GooeyButton.builder()
-            .display(itemStack.apply { orCreateTag.putDouble("progress", percentage) })
-            .title(Utils.colorOf(""))
-            .build())
+        template!!.set(
+            2, 8, GooeyButton.builder()
+                .display(itemStack.apply { orCreateTag.putDouble("progress", percentage) })
+                .title(Utils.colorOf(""))
+                .build()
+        )
     }
 
     override fun onClose(action: PageAction) {

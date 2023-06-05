@@ -4,16 +4,16 @@ import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.item.PokemonItem
 import com.cobblemon.mod.common.pokemon.Pokemon
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object Utils {
 
+    val dateFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
     val pattern = Pattern.compile("#([A-Fa-f0-9]{6})")
 
     fun hideFlags(itemStack: ItemStack, vararg parts: ItemStack.TooltipPart): ItemStack {
@@ -197,7 +197,7 @@ object Utils {
     }
 
 
-    fun getFormattedTime(time: Int): String {
+    fun getFormattedTime(time: Long): String {
         if (time <= 0) return "0"
         val timeFormatted: MutableList<String> = ArrayList()
         val days = time / 86400

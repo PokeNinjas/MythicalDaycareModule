@@ -2,27 +2,35 @@ package com.mythicalnetwork.mythicaldaycare.daycare
 
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.google.gson.*
+import com.mythicalnetwork.mythicaldaycare.utils.Utils
 import com.mythicalnetwork.mythicalmod.registry.MythicalItems
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.TagParser
 import net.minecraft.world.item.ItemStack
 import java.lang.reflect.Type
-import java.util.UUID
+import java.time.Duration
+import java.time.ZonedDateTime
+import java.util.*
 import java.util.function.Consumer
 
 class Egg(
     private var slot: Int,
     private val pokemon: Pokemon,
-    private var seconds: Int,
-    private val maxTime: Int,
+    private var readyTime: String? = null,
     private var isComplete: Boolean,
     private val player: UUID
 ) {
+    private var checkTicks: Int = 0
     fun tick() {
-        if (seconds < maxTime) {
-            seconds++
-        } else {
-            isComplete = true
+        checkTicks++
+        if (checkTicks >= 20) {
+            println("Egg Check ${getRemainingSeconds()}")
+            checkTicks = 0
+            if (isReady()) {
+                println("Egg Check is Ready")
+                isComplete = true
+                onComplete(DaycareManager.onEggComplete())
+            }
         }
     }
 
@@ -30,11 +38,23 @@ class Egg(
         completeAction.accept(this)
     }
 
-    fun getSlot(): Int{
+    fun isReady(): Boolean {
+        return !readyTime.isNullOrEmpty() && ZonedDateTime.parse(readyTime, Utils.dateFormatter)
+            .isBefore(ZonedDateTime.now())
+    }
+
+    fun getRemainingSeconds(): Long {
+        return if (readyTime == null) 0 else Duration.between(
+            ZonedDateTime.now(),
+            ZonedDateTime.parse(readyTime, Utils.dateFormatter)
+        ).toSeconds()
+    }
+
+    fun getSlot(): Int {
         return slot
     }
 
-    fun setSlot(slot: Int){
+    fun setSlot(slot: Int) {
         this.slot = slot
     }
 
@@ -46,16 +66,16 @@ class Egg(
         return pokemon
     }
 
-    fun getTime(): Int {
-        return seconds
-    }
-
-    fun getMaxTime(): Int{
-        return maxTime
+    fun getReadyTime(): String? {
+        return readyTime
     }
 
     fun getPlayer(): UUID {
         return player
+    }
+
+    fun setReadyTime(readyTime: String) {
+        this.readyTime = readyTime;
     }
 
     fun save(): CompoundTag {
@@ -64,8 +84,7 @@ class Egg(
         pokemon.saveToNBT(pokeTag)
         tag.putInt("slot", slot)
         tag.put("pokemon", pokeTag)
-        tag.putInt("seconds", seconds)
-        tag.putInt("maxTime", maxTime)
+        readyTime.orEmpty().let { tag.putString("readyTime", it) }
         tag.putBoolean("isComplete", isComplete)
         tag.putUUID("player", player)
         return tag
@@ -80,8 +99,7 @@ class Egg(
             return Egg(
                 tag.getInt("slot"),
                 Pokemon().loadFromNBT(tag.getCompound("pokemon")),
-                tag.getInt("seconds"),
-                tag.getInt("maxTime"),
+                tag.getString("readyTime").ifEmpty { null },
                 tag.getBoolean("isComplete"),
                 tag.getUUID("player")
             )

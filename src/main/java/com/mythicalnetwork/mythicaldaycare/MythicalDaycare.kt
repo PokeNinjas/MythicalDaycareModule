@@ -6,18 +6,15 @@ import com.mythicalnetwork.mythicaldaycare.database.DatabaseManager
 import com.mythicalnetwork.mythicaldaycare.daycare.DaycareManager
 import dev.lightdream.databasemanager.DatabaseMain
 import dev.lightdream.databasemanager.config.SQLConfig
-import dev.lightdream.databasemanager.database.HibernateDatabaseManager
 import dev.lightdream.filemanager.FileManager
 import dev.lightdream.filemanager.FileManagerMain
 import dev.lightdream.logger.LoggableMain
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.minecraft.server.MinecraftServer
 import org.quiltmc.loader.api.ModContainer
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback
 import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents
-import org.quiltmc.qsl.networking.api.ServerLoginConnectionEvents
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
 import org.slf4j.Logger
 import java.io.File
@@ -54,13 +51,13 @@ object MythicalDaycare : ModInitializer, DatabaseMain, LoggableMain, FileManager
         ServerTickEvents.END.register {
             DaycareManager.INSTANCE.tick()
         }
-        ServerPlayConnectionEvents.JOIN.register{ handler, _, _ ->
+        ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
             DaycareManager.INSTANCE.onPlayerJoin(handler.player)
         }
-        ServerPlayConnectionEvents.DISCONNECT.register{ handler, _ ->
+        ServerPlayConnectionEvents.DISCONNECT.register { handler, _ ->
             DaycareManager.INSTANCE.onPlayerQuit(handler.player)
         }
-        CommandRegistrationCallback.EVENT.register{ dispatcher, _, _ ->
+        CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             DaycareCommand.register(dispatcher)
         }
     }

@@ -10,7 +10,7 @@ import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
 import net.minecraft.util.profiling.ProfilerFiller
 
-class SpeciesSpecialDataJsonListener() : SimpleJsonResourceReloadListener(GSON, "specials") {
+class SpeciesSpecialDataJsonListener : SimpleJsonResourceReloadListener(GSON, "specials") {
     companion object {
         val GSON: Gson = Gson()
     }
@@ -23,7 +23,7 @@ class SpeciesSpecialDataJsonListener() : SimpleJsonResourceReloadListener(GSON, 
         SpeciesSpecialData.SPECIAL_DATA.clear()
         prepared.forEach { (id, json) ->
             val data: DataResult<SpeciesSpecialData> = SpeciesSpecialData.CODEC.parse(JsonOps.INSTANCE, json)
-            if(data.error().isPresent){
+            if (data.error().isPresent) {
                 MythicalDaycare.LOGGER.error("Error parsing special data for $id: ${data.error().get()}")
                 return@forEach
             }

@@ -8,9 +8,9 @@ import com.mythicalnetwork.mythicaldaycare.daycare.PastureInstance
 import dev.lightdream.databasemanager.database.HibernateDatabaseManager
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
-import java.util.UUID
+import java.util.*
 
-class DatabaseManager: HibernateDatabaseManager(MythicalDaycare) {
+class DatabaseManager : HibernateDatabaseManager(MythicalDaycare) {
     companion object {
         lateinit var GSON: Gson
 
@@ -18,6 +18,7 @@ class DatabaseManager: HibernateDatabaseManager(MythicalDaycare) {
             return GSON
         }
     }
+
     init {
         GSON = GsonBuilder()
             .registerTypeAdapter(PastureInstance::class.java, PastureInstance.Serializer())
@@ -26,6 +27,7 @@ class DatabaseManager: HibernateDatabaseManager(MythicalDaycare) {
             .registerTypeAdapter(Egg::class.java, Egg.Deserializer())
             .create()
     }
+
     override fun getClasses(): MutableList<Class<*>> {
         return mutableListOf(DaycareUser::class.java)
     }
@@ -38,7 +40,7 @@ class DatabaseManager: HibernateDatabaseManager(MythicalDaycare) {
         var query: Query<DaycareUser> = get(DaycareUser::class.java)
         query.query.where(query.builder.equal(query.root.get<String>("uuid"), uuid))
         var output: List<DaycareUser> = query.execute()
-        if(output.isEmpty()) {
+        if (output.isEmpty()) {
             return null
         }
         return output[0]
@@ -52,7 +54,7 @@ class DatabaseManager: HibernateDatabaseManager(MythicalDaycare) {
         val query: Query<DaycareUser> = get(DaycareUser::class.java)
         query.query.where(query.builder.equal(query.root.get<String>("uuid"), player.uuid))
         val output: List<DaycareUser> = query.execute()
-        if(output.isEmpty()){
+        if (output.isEmpty()) {
             val user: DaycareUser = DaycareUser(player)
             user.save()
             return user

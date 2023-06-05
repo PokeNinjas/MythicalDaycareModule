@@ -17,8 +17,10 @@ class SpeciesSpecialData(
                 SpeciesSpecialData(
                     species,
                     aspects
-                ) }
+                )
+            }
         }
+
         fun getSpeciesData(species: String): List<SpeciesSpecialData> {
             return SPECIAL_DATA.filter { it.value.species == species }.values.toList()
         }
