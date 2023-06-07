@@ -6,6 +6,7 @@ import com.mythicalnetwork.mythicaldaycare.database.DaycareUser
 import com.mythicalnetwork.mythicaldaycare.gui.DaycareGui
 import com.mythicalnetwork.mythicaldaycare.gui.EggsGui
 import com.mythicalnetwork.mythicaldaycare.utils.Utils
+import com.pokeninjas.kingdoms.fabric.dto.database.impl.User
 import eu.pb4.placeholders.api.PlaceholderContext
 import eu.pb4.placeholders.api.Placeholders
 import eu.pb4.placeholders.api.TextParserUtils
@@ -53,6 +54,10 @@ class DaycareManager {
         }
     }
 
+    fun getUserOrCreate(uuid: UUID): DaycareUser {
+        return User.get(uuid).getDataOrDefault("mythical_daycare_user", DaycareUser::class.java, DaycareUser())
+    }
+
     fun handleEggSpawn(instance: PastureInstance) {
         INSTANCE.PASTUREMAP.remove(instance.getPlayer())
         DAYCAREGUICONTROLLER[instance.getPlayer()].let { it?.update() }
@@ -60,39 +65,46 @@ class DaycareManager {
         val player = MythicalDaycare.getCurrentServer().playerList.getPlayer(instance.getPlayer())
         if (player != null) {
             player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
-            var message: TextNode? = TextParserUtils.formatNodes(MythicalDaycare.CONFIG.eggLaidMessage())
-            val placeholderMap: HashMap<String, Component> = HashMap()
-            placeholderMap["left_pokemon"] = instance.getLeftPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
-            placeholderMap["right_pokemon"] = instance.getRightPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
-            message = Placeholders.parseNodes(message, Placeholders.ALT_PLACEHOLDER_PATTERN_CUSTOM, placeholderMap)
-            player.sendSystemMessage(
-                (message.toText(PlaceholderContext.of(player).asParserContext(), true) as MutableComponent)
-                    .withStyle { style ->
-                        style
-                            .withHoverEvent(
-                                HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
-                                    Placeholders.parseNodes(
-                                        TextParserUtils.formatNodes(MythicalDaycare.CONFIG.daycareHoverMessage()),
-                                        Placeholders.ALT_PLACEHOLDER_PATTERN_CUSTOM,
-                                        placeholderMap
+
+            try {
+                var message: TextNode? = TextParserUtils.formatNodes(MythicalDaycare.CONFIG.eggLaidMessage())
+                val placeholderMap: HashMap<String, Component> = HashMap()
+                placeholderMap["left_pokemon"] =
+                    instance.getLeftPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
+                placeholderMap["right_pokemon"] =
+                    instance.getRightPokemon()?.species?.name?.let { Component.literal(it) } ?: Component.empty()
+                message = Placeholders.parseNodes(message, Placeholders.ALT_PLACEHOLDER_PATTERN_CUSTOM, placeholderMap)
+                player.sendSystemMessage(
+                    (message!!.toText(PlaceholderContext.of(player).asParserContext(), true) as MutableComponent)
+                        .withStyle { style ->
+                            style
+                                .withHoverEvent(
+                                    HoverEvent(
+                                        HoverEvent.Action.SHOW_TEXT,
+                                        Placeholders.parseNodes(
+                                            TextParserUtils.formatNodes(MythicalDaycare.CONFIG.daycareHoverMessage()),
+                                            Placeholders.ALT_PLACEHOLDER_PATTERN_CUSTOM,
+                                            placeholderMap
+                                        )
+                                            .toText(PlaceholderContext.of(player).asParserContext(), true)
                                     )
-                                        .toText(PlaceholderContext.of(player).asParserContext(), true)
                                 )
-                            )
-                            .withClickEvent(
-                                ClickEvent(
-                                    ClickEvent.Action.RUN_COMMAND,
-                                    "/${MythicalDaycare.CONFIG.daycareCommand()}"
+                                .withClickEvent(
+                                    ClickEvent(
+                                        ClickEvent.Action.RUN_COMMAND,
+                                        "/${MythicalDaycare.CONFIG.daycareCommand()}"
+                                    )
                                 )
-                            )
-                    })
+                        })
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     fun handleEggTaken(instance: PastureInstance) {
         if (instance.getEgg() != null) {
-            val user: DaycareUser? = MythicalDaycare.databaseManager.getUser(instance.getPlayer())
+            val user: DaycareUser = getUserOrCreate(instance.getPlayer())
             // Get the currently ticking list of eggs from the Hatch Map
             val eggs: ArrayList<Egg> = ArrayList(INSTANCE.HATCHMAP[instance.getPlayer()] ?: emptyList())
 
@@ -101,7 +113,7 @@ class DaycareManager {
 
             // Add to list and update data for hatching
             eggs.add(instance.getEgg()!!)
-            user?.setEggData(eggs)
+            user.setEggData(instance.getPlayer(), eggs)
             INSTANCE.HATCHMAP[instance.getPlayer()] = eggs
         }
         DAYCAREGUICONTROLLER[instance.getPlayer()].let { it?.update() }
@@ -109,7 +121,7 @@ class DaycareManager {
 
     fun handleEggHatch(egg: Egg) {
         INSTANCE.HATCHMAP[egg.getPlayer()]?.set(egg.getSlot(), egg)
-        MythicalDaycare.databaseManager.getUser(egg.getPlayer())?.setEggData(INSTANCE.HATCHMAP[egg.getPlayer()])
+        getUserOrCreate(egg.getPlayer()).setEggData(egg.getPlayer(), INSTANCE.HATCHMAP[egg.getPlayer()])
         EGGSGUICONTROLLER[egg.getPlayer()].let { it?.update() }
 
         val player = MythicalDaycare.getCurrentServer().playerList.getPlayer(egg.getPlayer())
@@ -147,19 +159,19 @@ class DaycareManager {
     }
 
     fun getPasture(player: ServerPlayer): PastureInstance? {
-        val breedingUser = MythicalDaycare.databaseManager.getUserOrCreate(player)
+        val breedingUser = getUserOrCreate(player.uuid)
         return breedingUser.getPasture()
     }
 
     fun getEggCountForPlayer(player: UUID): Int {
-        val user = MythicalDaycare.databaseManager.getUser(player) ?: return 0
+        val user = getUserOrCreate(player)
         val eggs = user.getEggs() ?: return 0
         return eggs.size
     }
 
     fun getEggs(player: UUID): List<Egg> {
-        val user = MythicalDaycare.databaseManager.getUser(player)
-        return user?.getEggs() ?: emptyList()
+        val user = getUserOrCreate(player)
+        return user.getEggs() ?: emptyList()
     }
 
     fun removeEgg(player: UUID, slot: Int) {
@@ -173,13 +185,13 @@ class DaycareManager {
             INSTANCE.HATCHMAP[player]!![i].setSlot(i)
         }
 
-        MythicalDaycare.databaseManager.getUser(player)?.setEggData(eggs)
+        getUserOrCreate(player).setEggData(player, eggs)
     }
 
     fun setPasture(leftPokemon: Pokemon?, rightPokemon: Pokemon?, player: ServerPlayer) {
         val instance: PastureInstance = PastureInstance.createInstance(leftPokemon, rightPokemon, player.uuid)
-        MythicalDaycare.databaseManager.getUserOrCreate(player).let { user ->
-            user.setPastureData(instance)
+        getUserOrCreate(player.uuid).let { user ->
+            user.setPastureData(player.uuid, instance)
         }
 
         // Add to TICK_MAP
@@ -197,8 +209,8 @@ class DaycareManager {
     }
 
     fun setPasture(instance: PastureInstance, player: ServerPlayer) {
-        MythicalDaycare.databaseManager.getUserOrCreate(player)
-            .let { user -> user.setPastureData(instance) }
+        getUserOrCreate(player.uuid)
+            .let { user -> user.setPastureData(player.uuid, instance) }
 
         // Add to TICK_MAP
         if (instance.getLeftPokemon() != null && instance.getRightPokemon() != null
@@ -212,20 +224,21 @@ class DaycareManager {
 
     fun onPlayerJoin(player: ServerPlayer) {
         // Add user to the Egg ticking map so they are continually saved
-        MythicalDaycare.databaseManager.getUserOrCreate(player)
+        getUserOrCreate(player.uuid)
             .let { user ->
                 INSTANCE.HATCHMAP[player.uuid] = user.getEggs() as ArrayList<Egg>
                 if (user.pasture != null) {
                     val instance = user.getPasture()
                     if (!instance.isComplete() && instance.getLeftPokemon() != null && instance.getRightPokemon() != null
-                        && PastureInstance.checkCompatible(instance.getLeftPokemon(), instance.getRightPokemon())) {
+                        && PastureInstance.checkCompatible(instance.getLeftPokemon(), instance.getRightPokemon())
+                    ) {
                         if (instance.getReadyTime().isNullOrEmpty()) {
                             instance.setReadyTime(
                                 ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong())
                                     .format(Utils.dateFormatter)
                             )
                         }
-                        INSTANCE.PASTUREMAP[user.uuid] = instance
+                        INSTANCE.PASTUREMAP[player.uuid] = instance
                     }
                 }
             }
@@ -233,7 +246,7 @@ class DaycareManager {
 
     fun onPlayerQuit(player: ServerPlayer) {
         // Save player's Egg Data and remove them from the Hatching Map so they aren't ticked.
-        MythicalDaycare.databaseManager.getUserOrCreate(player).setEggData(HATCHMAP[player.uuid])
+        getUserOrCreate(player.uuid).setEggData(player.uuid, HATCHMAP[player.uuid])
 
         INSTANCE.HATCHMAP.remove(player.uuid)
         INSTANCE.PASTUREMAP.remove(player.uuid)

@@ -18,7 +18,6 @@ import com.mythicalnetwork.mythicaldaycare.data.AspectChanceData
 import com.mythicalnetwork.mythicaldaycare.data.SpeciesSpecialData
 import com.mythicalnetwork.mythicaldaycare.daycare.Egg
 import com.mythicalnetwork.mythicaldaycare.daycare.PastureInstance
-import java.time.ZonedDateTime
 import java.util.*
 
 object EggUtils {

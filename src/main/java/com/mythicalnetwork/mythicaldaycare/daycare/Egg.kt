@@ -75,7 +75,7 @@ class Egg(
     }
 
     fun setReadyTime(readyTime: String) {
-        this.readyTime = readyTime;
+        this.readyTime = readyTime
     }
 
     fun save(): CompoundTag {

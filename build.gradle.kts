@@ -73,14 +73,15 @@ dependencies {
 
     kapt("org.ow2.asm:asm:9.3")
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    shade("dev.lightdream:database-manager:5.0.9")?.let { implementation(it) }
-    shade("dev.lightdream:file-manager:2.7.2")?.let { implementation(it) }
-    shade("dev.lightdream:lambda:4.1.14")?.let { implementation(it) }
-    shade("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
+    modImplementation("org.mongodb:bson:4.9.0")
 
-    shade("org.hibernate.common:hibernate-commons-annotations:6.0.6.Final")
-    shade("org.hibernate.orm:hibernate-core:6.2.0.Final")
-    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")?.let { include(it) }
+    modImplementation("dev.lightdream:file-manager:2.7.2")?.let { implementation(it) }
+    modImplementation("dev.lightdream:redis-manager:2.0.18")?.let { implementation(it) }
+    modImplementation("dev.lightdream:lambda:4.1.14")?.let { implementation(it) }
+    modImplementation("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
+    modImplementation("dev.lightdream:logger:3.3.11")?.let { implementation(it) }
+    modImplementation("dev.lightdream:command-manager-common:4.4.10")?.let { implementation(it) }
+    modImplementation("dev.lightdream:command-manager-fabric-1-19:4.4.10")?.let { implementation(it) }
 
     testImplementation(Dependencies.JUNIT_JUPITER_API)
     testRuntimeOnly(Dependencies.JUNIT_JUPITER_ENGINE)
@@ -92,15 +93,6 @@ tasks.getByName<Test>("test") {
 
 val shadowJar by tasks.getting(ShadowJar::class) {
     configurations = listOf(shade)
-    dependencies {
-        exclude(dependency("org.slf4j:.*:.*"))
-    }
-    relocate("com.mysql", "com.mythicalnetwork.mythicaldaycare.libs")
-    relocate("org.mariadb", "com.mythicalnetwork.mythicaldaycare.libs")
-    relocate("org.apache", "com.mythicalnetwork.mythicaldaycare.libs")
-    relocate("org.sqlite", "com.mythicalnetwork.mythicaldaycare.libs")
-    relocate("org.h2", "com.mythicalnetwork.mythicaldaycare.libs")
-    relocate("com.google", "com.mythicalnetwork.mythicaldaycare.libs")
 }
 
 val remapShadowJar = tasks.register<net.fabricmc.loom.task.RemapJarTask>("remapShadowJar") {

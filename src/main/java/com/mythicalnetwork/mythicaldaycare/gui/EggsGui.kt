@@ -40,7 +40,7 @@ class EggsGui(var player: ServerPlayer) :
 
     private fun refresh() {
         val buttons: MutableList<GooeyButton> = mutableListOf()
-        val user: DaycareUser? = MythicalDaycare.databaseManager.getUser(player)
+        val user: DaycareUser = DaycareManager.INSTANCE.getUserOrCreate(player.uuid)
         val eggs: List<Egg> = DaycareManager.INSTANCE.HATCHMAP[player.uuid] ?: emptyList()
 
         for (i in 0..MythicalDaycare.CONFIG.maxEggsPerPlayer()) {

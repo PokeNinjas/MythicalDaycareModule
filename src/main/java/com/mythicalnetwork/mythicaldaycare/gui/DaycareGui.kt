@@ -43,9 +43,8 @@ class DaycareGui(val player: ServerPlayer) :
     }
 
     private fun refresh() {
-        val user = MythicalDaycare.databaseManager.getUserOrCreate(player)
-        pasture = DaycareManager.INSTANCE.getPasture(player)
-
+        val user = DaycareManager.INSTANCE.getUserOrCreate(player.uuid)
+        pasture = user.getPasture()
 
         val firstPokemon: Pokemon? = pasture?.getLeftPokemon()
         val secondPokemon: Pokemon? = pasture?.getRightPokemon()
@@ -134,7 +133,7 @@ class DaycareGui(val player: ServerPlayer) :
                             return@onClick
                         }
 
-                        pasture!!.takeEgg(player)
+                        pasture!!.takeEgg()
                         player.playNotifySound(SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5F, 0.5F)
                         refresh()
                     }
@@ -171,7 +170,8 @@ class DaycareGui(val player: ServerPlayer) :
         if (savedInstance != null && savedInstance.isComplete()) {
             percentage = 10.0
         } else if (tickInstance != null && tickInstance.getRemainingSeconds() > 0) {
-            percentage = (MythicalDaycare.CONFIG.breedingTime().toDouble() - tickInstance.getRemainingSeconds()) / MythicalDaycare.CONFIG.breedingTime()
+            percentage = (MythicalDaycare.CONFIG.breedingTime()
+                .toDouble() - tickInstance.getRemainingSeconds()) / MythicalDaycare.CONFIG.breedingTime()
         }
 
         template!!.set(

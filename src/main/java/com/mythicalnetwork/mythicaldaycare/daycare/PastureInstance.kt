@@ -9,7 +9,6 @@ import com.mythicalnetwork.mythicaldaycare.utils.EggUtils
 import com.mythicalnetwork.mythicaldaycare.utils.Utils
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.TagParser
-import net.minecraft.server.level.ServerPlayer
 import java.lang.reflect.Type
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -100,9 +99,9 @@ class PastureInstance(
             println("Hatch Check ${getRemainingSeconds()}")
             checkTicks = 0
             if (isReady()) {
-                val user = MythicalDaycare.databaseManager.getUser(player)
+                val user = DaycareManager.INSTANCE.getUserOrCreate(player)
                 egg = leftPokemon?.let { rightPokemon?.let { it1 -> EggUtils.generateEgg(player, it, it1) } }
-                user!!.setPastureData(this)
+                user.setPastureData(player, this)
 
                 onComplete(DaycareManager.onPastureComplete())
             }
@@ -114,15 +113,18 @@ class PastureInstance(
         completeAction.accept(this)
     }
 
-    fun takeEgg(player: ServerPlayer) {
-        egg!!.setReadyTime(ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.hatchTime().toLong()).format(Utils.dateFormatter))
+    fun takeEgg() {
+        egg!!.setReadyTime(
+            ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.hatchTime().toLong()).format(Utils.dateFormatter)
+        )
         onTakeEgg(DaycareManager.onEggTaken())
 
         // Update the pasture for a new egg
         egg = null
-        readyTime = ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong()).format(Utils.dateFormatter)
-        MythicalDaycare.databaseManager.getUser(player)?.setPastureData(this)
-        DaycareManager.INSTANCE.PASTUREMAP[player.uuid] = this
+        readyTime =
+            ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong()).format(Utils.dateFormatter)
+        DaycareManager.INSTANCE.getUserOrCreate(player).setPastureData(player, this)
+        DaycareManager.INSTANCE.PASTUREMAP[player] = this
     }
 
     private fun onTakeEgg(takeAction: Consumer<PastureInstance>) {

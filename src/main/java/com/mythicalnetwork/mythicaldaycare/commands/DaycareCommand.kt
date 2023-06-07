@@ -2,7 +2,6 @@ package com.mythicalnetwork.mythicaldaycare.commands
 
 import ca.landonjw.gooeylibs2.api.UIManager
 import com.mojang.brigadier.CommandDispatcher
-import com.mythicalnetwork.mythicaldaycare.MythicalDaycare
 import com.mythicalnetwork.mythicaldaycare.gui.DaycareGui
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.commands.CommandSourceStack
@@ -16,7 +15,6 @@ object DaycareCommand {
                 .requires { Permissions.check(it, "mythicaldaycare.command.daycare") }
                 .executes { ctx ->
                     val player: ServerPlayer = ctx.source.player!!
-                    MythicalDaycare.databaseManager.getUserOrCreate(player)
                     UIManager.openUIForcefully(player, DaycareGui(player))
 
                     1

@@ -24,14 +24,14 @@ object Dependencies {
         QUILTED_FABRIC_API,
         ARCHITECTURY,
         COBBLEMON,
-        OWOLIB
-    )
-
-    val INCLUDE_DEPS = listOf<String>(
-        OWOSENTINEL,
+        OWOLIB,
         LUCKPERMS,
+        OWOSENTINEL,
         FABRIC_PERMS_API,
         MODMENU,
         PLACEHOLDERAPI
+    )
+
+    val INCLUDE_DEPS = listOf<String>(
     )
 }
