@@ -24,10 +24,8 @@ class Egg(
     fun tick() {
         checkTicks++
         if (checkTicks >= 20) {
-            println("Egg Check ${getRemainingSeconds()}")
             checkTicks = 0
             if (isReady()) {
-                println("Egg Check is Ready")
                 isComplete = true
                 onComplete(DaycareManager.onEggComplete())
             }

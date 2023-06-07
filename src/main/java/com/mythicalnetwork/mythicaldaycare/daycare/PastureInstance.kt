@@ -96,7 +96,6 @@ class PastureInstance(
     fun tick() {
         checkTicks++
         if (checkTicks >= 20) {
-            println("Hatch Check ${getRemainingSeconds()}")
             checkTicks = 0
             if (isReady()) {
                 val user = DaycareManager.INSTANCE.getUserOrCreate(player)
