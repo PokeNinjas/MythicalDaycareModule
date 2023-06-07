@@ -76,8 +76,7 @@ class EggsGui(var player: ServerPlayer) :
                                 player.playNotifySound(SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5F, 0.5F)
                                 refresh()
                             } else if (cons.clickType == ButtonClick.RIGHT_CLICK || cons.clickType == ButtonClick.SHIFT_RIGHT_CLICK) {
-                                DaycareManager.INSTANCE.removeEgg(player.uuid, egg.getSlot())
-                                player.playNotifySound(SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5F, 0.5F)
+                                confirmSlot = egg.getSlot()
                                 refresh()
                             }
                         }
