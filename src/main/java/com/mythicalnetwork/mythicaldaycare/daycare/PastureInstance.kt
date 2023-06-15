@@ -22,8 +22,6 @@ class PastureInstance(
     private var egg: Egg? = null,
     private val player: UUID
 ) {
-    private var checkTicks: Int = 0
-
     companion object {
         fun createInstance(leftPokemon: Pokemon?, rightPokemon: Pokemon?, player: UUID): PastureInstance {
             return PastureInstance(leftPokemon, rightPokemon, null, null, player)
@@ -94,16 +92,12 @@ class PastureInstance(
     }
 
     fun tick() {
-        checkTicks++
-        if (checkTicks >= 20) {
-            checkTicks = 0
-            if (isReady()) {
-                val user = DaycareManager.INSTANCE.getUserOrCreate(player)
-                egg = leftPokemon?.let { rightPokemon?.let { it1 -> EggUtils.generateEgg(player, it, it1) } }
-                user.setPastureData(player, this)
+        if (isReady()) {
+            val user = DaycareManager.INSTANCE.getUserOrCreate(player)
+            egg = leftPokemon?.let { rightPokemon?.let { it1 -> EggUtils.generateEgg(player, it, it1) } }
+            user.setPastureData(player, this)
 
-                onComplete(DaycareManager.onPastureComplete())
-            }
+            onComplete(DaycareManager.onPastureComplete())
         }
     }
 
@@ -189,7 +183,7 @@ class PastureInstance(
     }
 
     override fun toString(): String {
-        return "PastureInstance(leftPokemon=$leftPokemon, rightPokemon=$rightPokemon, readyTime=$readyTime, egg=$egg, player=$player, checkTicks=$checkTicks)"
+        return "PastureInstance(leftPokemon=$leftPokemon, rightPokemon=$rightPokemon, readyTime=$readyTime, egg=$egg, player=$player)"
     }
 
 

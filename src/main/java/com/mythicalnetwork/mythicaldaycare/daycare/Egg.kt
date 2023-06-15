@@ -20,15 +20,10 @@ class Egg(
     private var isComplete: Boolean,
     private val player: UUID
 ) {
-    private var checkTicks: Int = 0
     fun tick() {
-        checkTicks++
-        if (checkTicks >= 20) {
-            checkTicks = 0
-            if (isReady()) {
-                isComplete = true
-                onComplete(DaycareManager.onEggComplete())
-            }
+        if (isReady()) {
+            isComplete = true
+            onComplete(DaycareManager.onEggComplete())
         }
     }
 

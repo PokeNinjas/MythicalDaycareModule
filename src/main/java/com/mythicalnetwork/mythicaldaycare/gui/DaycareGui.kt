@@ -170,8 +170,7 @@ class DaycareGui(val player: ServerPlayer) :
         if (savedInstance != null && savedInstance.isComplete()) {
             percentage = 10.0
         } else if (tickInstance != null && tickInstance.getRemainingSeconds() > 0) {
-            percentage = (MythicalDaycare.CONFIG.breedingTime()
-                .toDouble() - tickInstance.getRemainingSeconds()) / MythicalDaycare.CONFIG.breedingTime()
+            percentage = (MythicalDaycare.CONFIG.breedingTime().toDouble() - tickInstance.getRemainingSeconds()) / MythicalDaycare.CONFIG.breedingTime()
         }
 
         template!!.set(

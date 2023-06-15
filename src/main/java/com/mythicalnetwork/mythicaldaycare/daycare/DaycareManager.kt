@@ -35,6 +35,9 @@ class DaycareManager {
     // Controls the Eggs GUI so that it can be updated when a egg is hatched
     var EGGSGUICONTROLLER: MutableMap<UUID, EggsGui.Companion.EggsGuiController> = mutableMapOf()
 
+    // Used for delaying the tick check for every 20 ticks
+    private var checkTicks: Int = 0
+
     companion object {
         val INSTANCE: DaycareManager = DaycareManager()
 
@@ -124,7 +127,7 @@ class DaycareManager {
         getUserOrCreate(egg.getPlayer()).setEggData(egg.getPlayer(), INSTANCE.HATCHMAP[egg.getPlayer()])
         EGGSGUICONTROLLER[egg.getPlayer()].let { it?.update() }
 
-        val player = MythicalDaycare.getCurrentServer().playerList.getPlayer(egg.getPlayer())
+        val player: ServerPlayer? = MythicalDaycare.getCurrentServer().playerList.getPlayer(egg.getPlayer())
         if (player != null) {
             player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
             val placeholderMap: HashMap<String, Component> = HashMap()
@@ -253,16 +256,36 @@ class DaycareManager {
     }
 
     fun tick() {
-        HashMap(INSTANCE.PASTUREMAP).values.forEach { entry ->
-            if (entry.getLeftPokemon() != null && entry.getRightPokemon() != null) {
-                entry.tick()
-            }
-        }
-        HashMap(INSTANCE.HATCHMAP).values.forEach { list ->
-            list.forEach { egg ->
-                if (!egg.isComplete()) {
-                    egg.tick()
+        checkTicks++
+        if (checkTicks >= 20) {
+            checkTicks = 0
+            try {
+                with(INSTANCE.PASTUREMAP.toMutableMap().iterator()) {
+                    forEach {
+                        if (it.value.getLeftPokemon() != null && it.value.getRightPokemon() != null) {
+                            it.value.tick()
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                MythicalDaycare.LOGGER.error("Error occurred while iterating Pasture tick map!")
+                e.printStackTrace()
+            }
+            try {
+                with(INSTANCE.HATCHMAP.toMutableMap().iterator()) {
+                    forEach {
+                        with(it.value.iterator()) {
+                            forEach { egg ->
+                                if (!egg.isComplete()) {
+                                    egg.tick()
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                MythicalDaycare.LOGGER.error("Error occurred while iterating Hatch tick map!")
+                e.printStackTrace()
             }
         }
     }

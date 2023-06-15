@@ -5,6 +5,7 @@ import ca.landonjw.gooeylibs2.api.button.ButtonClick
 import ca.landonjw.gooeylibs2.api.button.GooeyButton
 import ca.landonjw.gooeylibs2.api.data.UpdateEmitter
 import ca.landonjw.gooeylibs2.api.page.Page
+import ca.landonjw.gooeylibs2.api.page.PageAction
 import ca.landonjw.gooeylibs2.api.tasks.Task
 import ca.landonjw.gooeylibs2.api.template.Template
 import ca.landonjw.gooeylibs2.api.template.types.ChestTemplate
@@ -29,6 +30,8 @@ class EggsGui(var player: ServerPlayer) :
     private var confirmSlot: Int = -1
     private var confirmTask: Task? = null
 
+    private var updateTask: Task? = null
+
     init {
         val controller = EggsGuiController()
         controller.subscribe(this, this::refresh)
@@ -36,6 +39,13 @@ class EggsGui(var player: ServerPlayer) :
 
         template = ChestTemplate.Builder(3).build()
         refresh()
+
+        updateTask?.setExpired()
+        updateTask = Task.builder()
+            .execute { task -> refresh() }
+            .infinite()
+            .interval(MythicalDaycare.CONFIG.progressUpdateTime().toLong() * 20)
+            .build()
     }
 
     private fun refresh() {
@@ -111,6 +121,11 @@ class EggsGui(var player: ServerPlayer) :
         lore.add(Utils.colorOf("&aRight-Click to release"))
 
         return lore
+    }
+
+    override fun onClose(action: PageAction) {
+        DaycareManager.INSTANCE.EGGSGUICONTROLLER.remove(player.uuid)
+        updateTask?.setExpired()
     }
 
     override fun getTemplate(): Template {
