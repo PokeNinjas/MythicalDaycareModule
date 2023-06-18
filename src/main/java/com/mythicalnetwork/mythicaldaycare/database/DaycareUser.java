@@ -4,6 +4,7 @@ import com.mythicalnetwork.mythicaldaycare.MythicalDaycare;
 import com.mythicalnetwork.mythicaldaycare.daycare.Egg;
 import com.mythicalnetwork.mythicaldaycare.daycare.PastureInstance;
 import com.pokeninjas.kingdoms.fabric.dto.database.impl.User;
+import com.pokeninjas.kingdoms.fabric.exception.UserOfflineException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,12 @@ public class DaycareUser {
     }
 
     public void save(UUID uuid) {
-        User.get(uuid).setData("mythical_daycare_user", this);
+        try {
+            User.get(uuid).setData("mythical_daycare_user", this);
+        } catch (UserOfflineException e) {
+            MythicalDaycare.INSTANCE.getLOGGER().error("Error while attempting to save Daycare data for user: " + uuid);
+            e.printStackTrace();
+        }
     }
 
     @Override

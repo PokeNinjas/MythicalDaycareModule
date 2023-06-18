@@ -6,7 +6,7 @@ import com.mythicalnetwork.mythicaldaycare.database.DaycareUser
 import com.mythicalnetwork.mythicaldaycare.gui.DaycareGui
 import com.mythicalnetwork.mythicaldaycare.gui.EggsGui
 import com.mythicalnetwork.mythicaldaycare.utils.Utils
-import com.pokeninjas.kingdoms.fabric.dto.database.impl.User
+import com.pokeninjas.kingdoms.fabric.dto.database.impl.UserAPI
 import eu.pb4.placeholders.api.PlaceholderContext
 import eu.pb4.placeholders.api.Placeholders
 import eu.pb4.placeholders.api.TextParserUtils
@@ -58,7 +58,7 @@ class DaycareManager {
     }
 
     fun getUserOrCreate(uuid: UUID): DaycareUser {
-        return User.get(uuid).getDataOrDefault("mythical_daycare_user", DaycareUser::class.java, DaycareUser())
+        return UserAPI.getData(uuid, "mythical_daycare_user", DaycareUser::class.java) ?: DaycareUser()
     }
 
     fun handleEggSpawn(instance: PastureInstance) {
@@ -193,9 +193,7 @@ class DaycareManager {
 
     fun setPasture(leftPokemon: Pokemon?, rightPokemon: Pokemon?, player: ServerPlayer) {
         val instance: PastureInstance = PastureInstance.createInstance(leftPokemon, rightPokemon, player.uuid)
-        getUserOrCreate(player.uuid).let { user ->
-            user.setPastureData(player.uuid, instance)
-        }
+        getUserOrCreate(player.uuid).setPastureData(player.uuid, instance)
 
         // Add to TICK_MAP
         if (instance.getLeftPokemon() != null && instance.getRightPokemon() != null
@@ -212,8 +210,7 @@ class DaycareManager {
     }
 
     fun setPasture(instance: PastureInstance, player: ServerPlayer) {
-        getUserOrCreate(player.uuid)
-            .let { user -> user.setPastureData(player.uuid, instance) }
+        getUserOrCreate(player.uuid).setPastureData(player.uuid, instance)
 
         // Add to TICK_MAP
         if (instance.getLeftPokemon() != null && instance.getRightPokemon() != null
