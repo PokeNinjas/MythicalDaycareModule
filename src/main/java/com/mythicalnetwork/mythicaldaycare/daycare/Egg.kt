@@ -2,6 +2,7 @@ package com.mythicalnetwork.mythicaldaycare.daycare
 
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.google.gson.*
+import com.mythicalnetwork.mythicaldaycare.MythicalDaycare
 import com.mythicalnetwork.mythicaldaycare.utils.Utils
 import com.mythicalnetwork.mythicalmod.registry.MythicalItems
 import net.minecraft.nbt.CompoundTag
@@ -32,8 +33,11 @@ class Egg(
     }
 
     fun isReady(): Boolean {
-        return !readyTime.isNullOrEmpty() && ZonedDateTime.parse(readyTime, Utils.dateFormatter)
-            .isBefore(ZonedDateTime.now())
+        if (readyTime.isNullOrEmpty()) {
+            setReadyTime(ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.hatchTime().toLong()).format(Utils.dateFormatter))
+            DaycareManager.INSTANCE.getUserOrCreate(getPlayer()).setEggData(getPlayer(), DaycareManager.INSTANCE.HATCHMAP[getPlayer()])
+        }
+        return ZonedDateTime.parse(readyTime, Utils.dateFormatter).isBefore(ZonedDateTime.now())
     }
 
     fun getRemainingSeconds(): Long {

@@ -114,8 +114,10 @@ class PastureInstance(
 
         // Update the pasture for a new egg
         egg = null
-        readyTime =
-            ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong()).format(Utils.dateFormatter)
+        if (checkCompatible(leftPokemon, rightPokemon)) {
+            readyTime =
+                ZonedDateTime.now().plusSeconds(MythicalDaycare.CONFIG.breedingTime().toLong()).format(Utils.dateFormatter)
+        }
         DaycareManager.INSTANCE.getUserOrCreate(player).setPastureData(player, this)
         DaycareManager.INSTANCE.PASTUREMAP[player] = this
     }
