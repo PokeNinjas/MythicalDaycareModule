@@ -57,6 +57,8 @@ class EggsGui(var player: ServerPlayer) :
             if (i >= eggs.size)
                 break
             val egg: Egg = eggs[i]
+            if (MythicalDaycare.debugMode)
+                MythicalDaycare.LOGGER.debug("[DAYCARE] Egg GUI Check - $player - $egg")
             if (egg.isComplete()) {
                 if (egg.getSlot() == confirmSlot) {
                     buttons.add(GooeyButton.builder()

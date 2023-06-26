@@ -8,6 +8,7 @@ import com.mythicalnetwork.mythicalmod.registry.MythicalItems
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.TagParser
 import net.minecraft.world.item.ItemStack
+import org.quiltmc.qkl.library.brigadier.argument.player
 import java.lang.reflect.Type
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -22,6 +23,8 @@ class Egg(
     private val player: UUID
 ) {
     fun tick() {
+        if (MythicalDaycare.debugMode)
+            MythicalDaycare.LOGGER.debug("[DAYCARE] Egg Tick - $player - ${isReady()}")
         if (isReady()) {
             isComplete = true
             onComplete(DaycareManager.onEggComplete())
@@ -89,6 +92,10 @@ class Egg(
 
     fun getItemStack(): ItemStack {
         return MythicalItems.POKEMON_EGG.defaultInstance
+    }
+
+    override fun toString(): String {
+        return "Egg(slot=$slot, pokemon=$pokemon, readyTime=$readyTime, isComplete=$isComplete, player=$player)"
     }
 
     companion object {

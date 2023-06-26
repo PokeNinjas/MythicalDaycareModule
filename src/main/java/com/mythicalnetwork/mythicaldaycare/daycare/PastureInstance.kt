@@ -92,6 +92,8 @@ class PastureInstance(
     }
 
     fun tick() {
+        if (MythicalDaycare.debugMode)
+            MythicalDaycare.LOGGER.debug("[DAYCARE] Pasture Tick - $player - ${isReady()}")
         if (isReady()) {
             val user = DaycareManager.INSTANCE.getUserOrCreate(player)
             egg = leftPokemon?.let { rightPokemon?.let { it1 -> EggUtils.generateEgg(player, it, it1) } }

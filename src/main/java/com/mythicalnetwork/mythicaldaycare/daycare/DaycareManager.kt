@@ -259,6 +259,8 @@ class DaycareManager {
             try {
                 with(INSTANCE.PASTUREMAP.toMutableMap().iterator()) {
                     forEach {
+                        if (MythicalDaycare.debugMode)
+                            MythicalDaycare.LOGGER.info("[DAYCARE] PastureMap Tick - ${it.key} - ${it.value}")
                         if (it.value.getLeftPokemon() != null && it.value.getRightPokemon() != null) {
                             it.value.tick()
                         }
@@ -271,6 +273,8 @@ class DaycareManager {
             try {
                 with(INSTANCE.HATCHMAP.toMutableMap().iterator()) {
                     forEach {
+                        if (MythicalDaycare.debugMode)
+                            MythicalDaycare.LOGGER.info("[DAYCARE] HatchMap Tick - ${it.key} - ${it.value.size}")
                         with(it.value.iterator()) {
                             forEach { egg ->
                                 if (!egg.isComplete()) {

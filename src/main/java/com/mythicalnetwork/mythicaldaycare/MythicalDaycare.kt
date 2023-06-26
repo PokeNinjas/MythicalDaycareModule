@@ -24,6 +24,8 @@ object MythicalDaycare : ModInitializer {
 
     private var CURRENT_SERVER: MinecraftServer? = null
 
+    var debugMode: Boolean = false
+
     val GSON = GsonBuilder()
         .registerTypeAdapter(PastureInstance::class.java, PastureInstance.Serializer())
         .registerTypeAdapter(PastureInstance::class.java, PastureInstance.Deserializer())
