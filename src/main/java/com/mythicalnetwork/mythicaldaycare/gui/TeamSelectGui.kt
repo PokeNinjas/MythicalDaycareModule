@@ -63,7 +63,7 @@ class TeamSelectGui(var currentInstance: PastureInstance?, var player: ServerPla
                             currentInstance!!.setRightPokemon(pokemon)
                             Cobblemon.storage.getParty(player).remove(pokemon)
                         }
-                        player.playNotifySound(SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.15F, 1.0F)
+                        player.playNotifySound(SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 0.15F, 1.0F)
                         DaycareManager.INSTANCE.setPasture(
                             currentInstance!!.getLeftPokemon(),
                             currentInstance!!.getRightPokemon(),

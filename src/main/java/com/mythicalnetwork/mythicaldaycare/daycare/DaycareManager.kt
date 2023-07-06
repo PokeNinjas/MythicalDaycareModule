@@ -69,7 +69,7 @@ class DaycareManager {
 
         val player = MythicalDaycare.getCurrentServer().playerList.getPlayer(instance.getPlayer())
         if (player != null) {
-            player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 0.5F, 0.5F)
+            player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
 
             try {
                 var message: TextNode? = TextParserUtils.formatNodes(MythicalDaycare.CONFIG.eggLaidMessage())
@@ -131,7 +131,7 @@ class DaycareManager {
 
         val player: ServerPlayer? = MythicalDaycare.getCurrentServer().playerList.getPlayer(egg.getPlayer())
         if (player != null) {
-            player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 0.5F, 0.5F)
+            player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
             val placeholderMap: HashMap<String, Component> = HashMap()
             player.sendSystemMessage(
                 (Placeholders.parseNodes(
