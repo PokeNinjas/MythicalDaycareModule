@@ -6,7 +6,9 @@ import com.mythicalnetwork.mythicaldaycare.database.DaycareUser
 import com.mythicalnetwork.mythicaldaycare.gui.DaycareGui
 import com.mythicalnetwork.mythicaldaycare.gui.EggsGui
 import com.mythicalnetwork.mythicaldaycare.utils.Utils
+import com.pokeninjas.kingdoms.fabric.annotations.FabricEventHandler
 import com.pokeninjas.kingdoms.fabric.api.UserAPI
+import com.pokeninjas.kingdoms.fabric.events.impl.player.PlayerLeaveEvent
 import eu.pb4.placeholders.api.PlaceholderContext
 import eu.pb4.placeholders.api.Placeholders
 import eu.pb4.placeholders.api.TextParserUtils
@@ -244,12 +246,14 @@ class DaycareManager {
             }
     }
 
-    fun onPlayerQuit(player: ServerPlayer) {
+    @FabricEventHandler(order = -1)
+    fun onPlayerQuit(event: PlayerLeaveEvent) {
         // Save player's Egg Data and remove them from the Hatching Map so they aren't ticked.
-        getUserOrCreate(player.uuid).setEggData(player.uuid, HATCHMAP[player.uuid])
+        getUserOrCreate(event.handler.player.uuid)
+            .setEggData(event.handler.player.uuid, HATCHMAP[event.handler.player.uuid])
 
-        INSTANCE.HATCHMAP.remove(player.uuid)
-        INSTANCE.PASTUREMAP.remove(player.uuid)
+        INSTANCE.HATCHMAP.remove(event.handler.player.uuid)
+        INSTANCE.PASTUREMAP.remove(event.handler.player.uuid)
     }
 
     fun tick() {

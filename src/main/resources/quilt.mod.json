@@ -47,6 +47,10 @@
       {
         "id": "cobblemon",
         "versions": ">=1.2.0"
+      },
+      {
+        "id": "kingdoms",
+        "versions": ">=0.3.8"
       }
     ]
   },

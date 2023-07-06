@@ -6,6 +6,8 @@ import com.mythicalnetwork.mythicaldaycare.commands.DaycareCommand
 import com.mythicalnetwork.mythicaldaycare.daycare.DaycareManager
 import com.mythicalnetwork.mythicaldaycare.daycare.Egg
 import com.mythicalnetwork.mythicaldaycare.daycare.PastureInstance
+import com.pokeninjas.kingdoms.fabric.Kingdoms
+import dev.lightdream.lambda.ScheduleUtils
 import net.minecraft.server.MinecraftServer
 import org.quiltmc.loader.api.ModContainer
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer
@@ -14,6 +16,7 @@ import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents
 import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents
 import org.slf4j.Logger
+
 
 object MythicalDaycare : ModInitializer {
 
@@ -47,12 +50,14 @@ object MythicalDaycare : ModInitializer {
         ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
             DaycareManager.INSTANCE.onPlayerJoin(handler.player)
         }
-        ServerPlayConnectionEvents.DISCONNECT.register { handler, _ ->
-            DaycareManager.INSTANCE.onPlayerQuit(handler.player)
-        }
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             DaycareCommand.register(dispatcher)
         }
+        ScheduleUtils.runTaskTimerAsync({ task ->
+            val instance = Kingdoms.getInstance() ?: return@runTaskTimerAsync
+            instance.listenerManager.register(DaycareManager.INSTANCE)
+            task.cancel()
+        }, 0L, 1000L)
     }
 
     fun getCurrentServer(): MinecraftServer {
