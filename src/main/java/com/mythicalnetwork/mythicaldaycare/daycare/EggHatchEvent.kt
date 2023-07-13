@@ -2,7 +2,7 @@ package com.mythicalnetwork.mythicaldaycare.daycare
 
 import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.server.level.ServerPlayer
+import java.util.UUID
 
 fun interface EggHatchEvent {
     companion object {
@@ -17,5 +17,5 @@ fun interface EggHatchEvent {
             }
     }
 
-    fun hatch(player: ServerPlayer, egg: Egg)
+    fun hatch(player: UUID, egg: Egg)
 }

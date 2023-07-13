@@ -131,6 +131,8 @@ class DaycareManager {
 
         val player: ServerPlayer? = MythicalDaycare.getCurrentServer().playerList.getPlayer(egg.getPlayer())
         if (player != null) {
+            EggHatchEvent.EVENT.invoker().hatch(player.uuid, egg)
+
             player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.5F, 0.5F)
             val placeholderMap: HashMap<String, Component> = HashMap()
             player.sendSystemMessage(

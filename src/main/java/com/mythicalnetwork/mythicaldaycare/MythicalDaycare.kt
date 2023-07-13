@@ -55,7 +55,8 @@ object MythicalDaycare : ModInitializer {
         }
         ScheduleUtils.runTaskTimerAsync({ task ->
             val instance = Kingdoms.getInstance() ?: return@runTaskTimerAsync
-            instance.listenerManager.register(DaycareManager.INSTANCE)
+            val listener = instance.listenerManager ?: return@runTaskTimerAsync
+            listener.register(DaycareManager.INSTANCE)
             task.cancel()
         }, 0L, 1000L)
     }
